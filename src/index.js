@@ -1,11 +1,11 @@
 const express = require('express')
 const morgan = require('morgan')
-
+const mongoose = require('./database/index.js')
 const bodyParser = require('body-parser');
 const cors = require('cors')
 app = express();
 
-app.set('port', process.env.PORT || 3000);
+app.set('port', process.env.PORT || 4000);
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
