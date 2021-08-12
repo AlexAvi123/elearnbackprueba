@@ -1,9 +1,13 @@
 const mongoose = require("../database/index");
 
 var UserSchemaJSON = {
-  id: String,
+  id_document: {
+    type: String,
+    index: true,
+    unique: true,
+  },
   name: String,
-  username: String,
+  lastname: String,
   mail: String,
   password: String,
 };
