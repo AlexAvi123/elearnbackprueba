@@ -3,12 +3,13 @@ const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 
 var optionSchemaJSON = { item: String, answer: Boolean };
+
 var optionSchema = new Schema(optionSchemaJSON);
 var QuestionSchemaJSON = {
   Task: ObjectId,
   type: { type: String },
   questionTxt: String,
-  img: String,
+  img: Array,
   options: [optionSchema],
 };
 
