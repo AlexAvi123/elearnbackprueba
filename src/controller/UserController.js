@@ -12,12 +12,13 @@
 
 // module.exports = UserController;
 
-
 /*****************PARTE DE ROLY********************/
 
 const User = require("../models/UserModel");
-const bcrypt = require('bcrypt');
+const bcrypt = require("bcrypt");
 const BCRYPT_SALT_ROUNDS = 12;
+
+const ObjectId = require("mongoose").Types.ObjectId;
 
 //ESTE CODIGO ES PARA PODER INGRESAR UNA IMAGEN, ESTA COMENTADO POR SI DESPUES SE IMPLEMENTA ESO DE LA IMAGEN
 // const multer = require('multer');
@@ -32,121 +33,126 @@ const BCRYPT_SALT_ROUNDS = 12;
 //                 message: error
 //             });
 //         }
-//         return next(); 
+//         return next();
 //     });
 // };
 
 /*********************METODOS************************* */
 //Insertar usuario
 exports.saveUser = async (req, res) => {
-  const user= new User(req.body);
+  const user = new User(req.body);
   try {
     //ESTE CODIGO ES PARA PODER INGRESAR UNA IMAGEN, ESTA COMENTADO POR SI DESPUES SE IMPLEMENTA ESO DE LA IMAGEN
-      // if(req.file && req.file.filename){
-      //     user.imagen=req.file.filename;
-      // }
-       
-      var passwordHash = await bcrypt.hash(req.body.password, BCRYPT_SALT_ROUNDS);
-      user.password= passwordHash;
+    // if(req.file && req.file.filename){
+    //     user.imagen=req.file.filename;
+    // }
 
-      await user.save();
-      res.json({"message": "Nuevo Usuario agregado"});
-  }catch(error){
+    var passwordHash = await bcrypt.hash(req.body.password, BCRYPT_SALT_ROUNDS);
+    user.password = passwordHash;
 
-      if(error.code === 11000){
-          res.status(400).json({
-              message: `Ya existe un Usuario con ese correo ${req.body.mail}`
-          });
-      }else{
-        if(error.name == "ValidationError"){
-          //res.status(400).json(error.message);
-          res.json(error.message);
-        }
+    await user.save();
+    res.json({ message: "Nuevo Usuario agregado" });
+  } catch (error) {
+    if (error.code === 11000) {
+      res.status(400).json({
+        message: `Ya existe un Usuario con ese correo ${req.body.mail}`,
+      });
+    } else {
+      if (error.name == "ValidationError") {
+        //res.status(400).json(error.message);
+        res.json(error.message);
       }
-      res.send(error);
+    }
+    res.send(error);
   }
 };
 
 // Listar usuarios
 exports.listUser = async (req, res) => {
-
   try {
-      const user = await User.find({});
-      res.json(user);
-  }catch(error){
-      res.send(error);
+    const user = await User.find({});
+    res.json(user);
+  } catch (error) {
+    res.send(error);
   }
-  
 };
 
 // Mostrar un usuario en especifico
 exports.showUser = async (req, res, next) => {
+  var user = null;
+
   try {
-      const user = await User.findById(req.params.id);
-      if(!user){
-          res.status(404).json({
-              message: "El Usuario no existe"
-          });
-      }
-      res.json(user);
-  }catch(error){
-      res.status(400).json({
-          message: "Error al procesar la peticion"
+    try {
+      objectIdUser = ObjectId(req.params.id);
+      user = await User.findById(objectIdUser);
+    } catch (error) {
+      user = await User.findOne({ mail: req.params.id });
+    }
+    if (!user) {
+      res.status(404).json({
+        message: "El Usuario no existe",
       });
+    }
+    res.json(user);
+  } catch (error) {
+    res.status(400).json({
+      message: "Error al procesar la peticion",
+      err: error,
+    });
   }
 };
 
 // Actualizar un usuario
 exports.updateUser = async (req, res, next) => {
   try {
-      let newUsuario = req.body;
-      //ESTE CODIGO ES PARA PODER INGRESAR UNA IMAGEN, ESTA COMENTADO POR SI DESPUES SE IMPLEMENTA ESO DE LA IMAGEN
-      // if(req.file && req.file.filename){
-      //     newUsuario.imagen=req.file.filename;
-      // }else{
-      //     const user = await User.findById(req.params.id);
-      //     newUsuario.imagen = user.imagen;
-      // }
+    let newUsuario = req.body;
+    //ESTE CODIGO ES PARA PODER INGRESAR UNA IMAGEN, ESTA COMENTADO POR SI DESPUES SE IMPLEMENTA ESO DE LA IMAGEN
+    // if(req.file && req.file.filename){
+    //     newUsuario.imagen=req.file.filename;
+    // }else{
+    //     const user = await User.findById(req.params.id);
+    //     newUsuario.imagen = user.imagen;
+    // }
 
-      if(req.body.password){
-        var passwordHash = await bcrypt.hash(req.body.password, BCRYPT_SALT_ROUNDS);
-        newUsuario.password= passwordHash;
-      }
-      
-      const updateUsuario = await User.findOneAndUpdate(
-          { _id: req.params.id },
-          newUsuario,
-          { new: true }
+    if (req.body.password) {
+      var passwordHash = await bcrypt.hash(
+        req.body.password,
+        BCRYPT_SALT_ROUNDS
       );
+      newUsuario.password = passwordHash;
+    }
 
-      res.json({
-          message: "Usuario Actualizado"
-      });
-  }catch(error){
-      if(error.code === 11000){
-          res.status(400).json({
-              message: `Ya existe un Usuario con ese correo ${req.body.mail}`
-          });
-      }
+    const updateUsuario = await User.findOneAndUpdate(
+      { _id: req.params.id },
+      newUsuario,
+      { new: true }
+    );
+
+    res.json({
+      message: "Usuario Actualizado",
+    });
+  } catch (error) {
+    if (error.code === 11000) {
       res.status(400).json({
-          message: "Error al procesar la peticion"
+        message: `Ya existe un Usuario con ese correo ${req.body.mail}`,
       });
+    }
+    res.status(400).json({
+      message: "Error al procesar la peticion",
+    });
   }
-  
 };
 
 // Eliminar un usuario
 exports.deleteUser = async (req, res, next) => {
   try {
-      await User.findOneAndDelete(
-          {_id: req.params.id}
-      );
-      res.json({
-          message: "El Usuario Eliminado"
-      });
-  }catch(error){
-      res.status(400).json({
-          message: "Error al procesar la peticion"
-      });
+    await User.findOneAndDelete({ _id: req.params.id });
+    res.json({
+      message: "El Usuario Eliminado",
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: "Error al procesar la peticion",
+    });
   }
 };
