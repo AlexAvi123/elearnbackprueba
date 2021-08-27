@@ -15,32 +15,6 @@ class UnitController {
     }
   }
 
-
-  async findUnit(_id, _mail) {
-    var user
-    try {
-      if(_id != null){
-        //objectIdUser = ObjectId(_id);
-        user = await User.findById(_id);
-      }else{
-        user = await User.findOne({ mail: _mail });
-      }
-    } catch (error) {
-    }
-    return user
-  }
-
-
-  async deleteUser(_id) { 
-    try {
-      await User.findOneAndDelete({ "_id": _id });
-      return { res: "ok" }
-    } catch (error) {
-      return error
-    }
-    
-  }
-  async changeUser() { }
 }
 
 /*********************METODOS************************* */
