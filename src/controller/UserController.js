@@ -10,7 +10,7 @@ class UserController {
       await user.save();
       return { res: "ok" }
     } catch (error) {
-      return error
+      return {"error": error}
     }
   }
 
@@ -24,6 +24,7 @@ class UserController {
         user = await User.findOne({ mail: _mail });
       }
     } catch (error) {
+      return {"error": error}
     }
     return user
   }
@@ -34,7 +35,7 @@ class UserController {
       await User.findOneAndDelete({ "_id": _id });
       return { res: "ok" }
     } catch (error) {
-      return error
+      return {"error": error}
     }
     
   }
@@ -43,7 +44,7 @@ class UserController {
   
 }
 
-//module.exports = UserController;
+module.exports = UserController;
 
 
 // //ESTE CODIGO ES PARA PODER INGRESAR UNA IMAGEN, ESTA COMENTADO POR SI DESPUES SE IMPLEMENTA ESO DE LA IMAGEN
