@@ -1,13 +1,21 @@
-const mongoose = require("../database/index");
+/*****************PARTE DE ROLY********************/
+const mongoose = require('mongoose');
+const conn = mongoose.connection;
 const Schema = mongoose.Schema;
-const ObjectId = Schema.ObjectId;
 
-var ProgressSchemaJSON = {
-  user: ObjectId,
-  task_id: [ObjectId],
-};
+//var itemsSchema = new Schema({ item: String, answer: Boolean });
 
-var ProgressSchema = new Schema(ProgressSchemaJSON);
-var Progress = new mongoose.model("Progress", ProgressSchema);
+const ProgressSchema = new Schema({
+  user_id: {
+    type: Schema.ObjectId,
+    required: true,
+    ref: "User"
+  },
+  tasks_id: [{
+    type: Schema.ObjectId,
+    ref: "Task"
+  }]
+  
+});
 
-module.exports = Progress;
+module.exports = mongoose.model('Progress', ProgressSchema);

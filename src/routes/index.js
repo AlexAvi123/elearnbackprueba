@@ -1,25 +1,4 @@
-// const express = require("express");
-// const router = express.Router();
-// const User = require("../controller/UserController");
 
-// const UserController = require("../controller/UserController");
-
-// router.post('/users' /*, UserController.fileupload*/ ,UserController.saveUser);
-
-// router.get("/", (req, res) => {
-//   var user = new User();
-//   user.saveUser({
-//     id: "123",
-//     name: "Jose",
-//     username: "Nicromano",
-//     email: "ljose297@gmail.com",
-//     password: "nicromano11",
-//   });
-
-//   res.send("okk");
-// });
-
-// module.exports = router;
 
 /*****************PARTE DE ROLY********************/
 const express = require("express");
@@ -64,6 +43,7 @@ router.post("/signup", async (req, res) => {
     return res.json({ res: error });
   }
 });
+router.post('/signin')
 
 router.get('/user/:id', (req, res)=>{
 

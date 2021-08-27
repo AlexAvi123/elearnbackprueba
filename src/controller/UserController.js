@@ -46,6 +46,23 @@ class UserController {
 module.exports = UserController;
 
 
+// //ESTE CODIGO ES PARA PODER INGRESAR UNA IMAGEN, ESTA COMENTADO POR SI DESPUES SE IMPLEMENTA ESO DE LA IMAGEN
+// const multer = require('multer');
+// const multerConfig = require('../utils/multerConfig');
+
+// const upload = multer (multerConfig).single("img");
+
+// exports.fileupload = async (req, res, next) => {
+//     upload(req, res, function(error){
+//         if(error){
+//             res.json({
+//                 message: error
+//             });
+//         }
+//         return next();
+//     });
+// };
+
 /*********************METODOS PARA LAS RUTAS************************* */
 
 //Metodo para crear un usuario ruta POST /users/create
@@ -59,7 +76,7 @@ exports.createUser = async (req, res) => {
       //res.send("true");
       //ESTE CODIGO ES PARA PODER INGRESAR UNA IMAGEN, ESTA COMENTADO POR SI DESPUES SE IMPLEMENTA ESO DE LA IMAGEN
       // if(req.file && req.file.filename){
-      //     user.imagen=req.file.filename;
+      //   datos_user.img=req.file.filename;
       // }
       if(req.body.password){
         var passwordHash = await bcrypt.hash(req.body.password, BCRYPT_SALT_ROUNDS);
@@ -128,23 +145,6 @@ exports.deleteUser = async (req, res, next) => {
 // const BCRYPT_SALT_ROUNDS = 12;
 
 // const ObjectId = require("mongoose").Types.ObjectId;
-
-// //ESTE CODIGO ES PARA PODER INGRESAR UNA IMAGEN, ESTA COMENTADO POR SI DESPUES SE IMPLEMENTA ESO DE LA IMAGEN
-// // const multer = require('multer');
-// // const multerConfig = require('../utils/multerConfig');
-
-// // const upload = multer (multerConfig).single("imagen");
-
-// // exports.fileupload = async (req, res, next) => {
-// //     upload(req, res, function(error){
-// //         if(error){
-// //             res.json({
-// //                 message: error
-// //             });
-// //         }
-// //         return next();
-// //     });
-// // };
 
 // /*********************METODOS************************* */
 // //Insertar usuario
