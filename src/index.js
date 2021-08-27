@@ -61,8 +61,7 @@ app.use(cors());
 
 app.use("/", routers());
 //app.use(require('./routes/index'))
-
-//app.use(express.static('uploads'));
+app.use(express.static("src/uploads"));
 
 app.listen(5000, function () {
   console.log("Servidor corriendo BELLEZA");

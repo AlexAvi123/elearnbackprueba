@@ -14,7 +14,6 @@ class UserController {
     }
   }
 
-
   async findUser(_id, _mail) {
     var user
     try {
@@ -40,6 +39,8 @@ class UserController {
     
   }
   async changeUser() { }
+
+  
 }
 
 //module.exports = UserController;
@@ -69,7 +70,7 @@ exports.createUser = async (req, res) => {
   var datos_user = req.body;
   var user = new UserController();
   try {
-    //res.send(req.body._id);
+    //res.send(req.body);
     var usuario_existe =  await user.findUser(req.body._id, req.body.mail);
     if (!usuario_existe) {
       //res.send("true");
