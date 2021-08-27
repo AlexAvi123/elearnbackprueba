@@ -1,5 +1,3 @@
-
-
 /*****************PARTE DE ROLY********************/
 const express = require("express");
 const router = express.Router();
@@ -43,18 +41,35 @@ router.post("/signup", async (req, res) => {
     return res.json({ res: error });
   }
 });
-router.post('/signin')
-
-router.get('/user/:id', (req, res)=>{
-
-    user = new UserController().findUser(null, req.params.id);
-    if (user){
-      /* el usuario existe */
-      res.json({res: 'User Exist'})
-    }else {
-      /* Usuario no existe */
-      res.json({res: 'User Not Exist'})
+router.post("/signin", async (req, res) => {
+  userBody = req.body;
+  user = new UserController();
+  user = await user.findUser(null, userBody.mail)
+  console.log(user)
+  if (user) {
+    /* si existe */
+    result = await bcrypt.compare(userBody.password, user.password);
+    if (result) {
+      /* contraseñas iguales */
+      res.json(user);
+    } else {
+      /* Credenciales incorrectas */
+      res.json(null);
     }
+  } else {
+    res.json({ res: "No existe Usuario" });
+  }
+});
+
+router.get("/user/:id", (req, res) => {
+  user = new UserController().findUser(null, req.params.id);
+  if (user) {
+    /* el usuario existe */
+    res.json(user);
+  } else {
+    /* Usuario no existe */
+    res.json({ res: "User Not Exist" });
+  }
 });
 module.exports = router;
 /******************************** USUARIO ************************************************ */
