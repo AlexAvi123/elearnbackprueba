@@ -15,97 +15,15 @@ class UnitController {
     }
   }
 
+  async getIdUnit(unit, module, book) {
+    try {
+      var unit_result = await Unit.findOne({ "unit": unit, "module": module, "book": book });
+      return unit_result._id;
+    } catch (error) {
+      return 0
+    }
+  }
+
 }
 
-/*********************METODOS************************* */
-//Insertar Unidad
-exports.saveUnit = async (req, res) => {
-    const unit_body = new Unit(req.body);
-    var unit = new UnitController();
-    try {
-        var respuesta = await unit.saveUnit(unit_body);
-        if (respuesta.res == "ok") {
-            res.json({ "message": "Nueva Unidad agregada" });
-        } else {
-            if (respuesta.name == "ValidationError") {
-                res.json(respuesta.message);
-            }else{
-                res.json(respuesta);
-            }
-        }
-    } catch (error) {
-        res.send(error);
-        next();
-    }
-};
-
-
-
-
-
-/*******************************ESTOS METODOS AUN NO ESTAN************************************* */
-// Listar Unidades
-// exports.listUnit = async (req, res) => {
-//     try {
-//         const unit = await Unit.find({});
-//         res.json(unit);
-//     } catch (error) {
-//         res.send(error);
-//         next();
-//     }
-// };
-
-// // Mostrar una Unidad en especifico
-// exports.showUnit = async (req, res, next) => {
-//     try {
-//         const unit = await Unit.findById(req.params.id);
-//         if (!unit) {
-//             res.status(404).json({
-//                 message: "La Unidad no existe"
-//             });
-//         }
-//         res.json(unit);
-//     } catch (error) {
-//         res.status(400).json({
-//             message: "Error al procesar la peticion"
-//         });
-//         next();
-//     }
-// };
-
-// // Actualizar una Unidad
-// exports.updateUnit = async (req, res, next) => {
-//     try {
-//         let newUnit = req.body;
-//         const updateUnit = await Unit.findOneAndUpdate(
-//             { _id: req.params.id },
-//             newUnit,
-//             { new: true }
-//         );
-//         res.json({
-//             message: "Unidad Actualizada"
-//         });
-//     } catch (error) {
-//         res.status(400).json({
-//             message: "Error al procesar la peticion"
-//         });
-//         next();
-//     }
-// };
-
-// // Eliminar una Unidad
-// exports.deleteUnit = async (req, res, next) => {
-//     try {
-//         await Unit.findOneAndDelete(
-//             { _id: req.params.id }
-//         );
-//         res.json({
-//             message: "Unidad Eliminada"
-//         });
-//     } catch (error) {
-//         res.status(400).json({
-//             message: "Error al procesar la peticion"
-//         });
-//         next();
-//     }
-// };
+module.exports = UnitController;
