@@ -1,17 +1,12 @@
-// 'use strict';
-// const mongoose = require('mongoose');
-
-// mongoose.connect('mongodb://localhost/LearningEnglish');
-
-
-// module.exports = mongoose;
 
 /*****************PARTE DE ROLY********************/
 const mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise;
 mongoose.connect(
-    'mongodb://localhost/LearningEnglish',
+    //'mongodb://localhost/LearningEnglish'
+    //coneccion a la base de datos en la nube
+    'mongodb+srv://root:utm.english.cluster@englishcluster.eayiw.mongodb.net/LearningEnglish?retryWrites=true&w=majority',
     {
         useNewUrlParser : true,
         useUnifiedTopology: true,

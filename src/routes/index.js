@@ -184,26 +184,32 @@ router.post('/question/create', async (req, res, next) => {
 router.post('/progress/update', async (req, res, next) => {
   try {
     const user = new UserController();
-    const task =  new TaskController();
+    const task = new TaskController();
     const progress = new ProgressController();
-
     var user_datos = await user.findUser(req.body.user_id.id, req.body.user_id.mail);
-    if (user_datos) {
-      task_datos = await task.findTask(req.body.tasks_id);
-      if(task_datos){
-        //falta verificar si esa leccion ya existe en el progreso del usuario
-
-        //envia el id de la leccion
-        await progress.updateProgress(user_datos._id, task_datos._id);
-
-        res.send("ready");
-      }else{
+    if (user_datos != null && !user_datos.error) {
+      var task_datos = await task.findTask(req.body.tasks_id);
+      if (task_datos) {
+        var user_progress = await progress.getIdProgress(user_datos._id);
+        if (user_progress) {
+          //verificar si esa leccion ya existe en el progreso del usuario
+          var exist_task_in_progress = await progress.taskExistinProgress(user_datos._id, task_datos._id);
+          if (!exist_task_in_progress) {
+            //agrega el id de la leccion a ese usuario
+            var update = await progress.updateProgress(user_datos._id, task_datos._id);
+            res.json({ res: "Task Registrada" });
+          } else {
+            res.json({ res: "Task ya ha sido registrado en ese usuario" });
+          }
+        } else {
+          res.json({ res: "User no tiene Progreso" });
+        }
+      } else {
         res.json({ res: "Task Not Exist" });
       }
-    }else{
+    } else {
       res.json({ res: "User Not Exist" });
     }
-
   } catch (error) {
     res.send(error);
     next();

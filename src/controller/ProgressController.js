@@ -34,6 +34,16 @@ class ProgressController {
     }
   }
 
+  async taskExistinProgress(user_id, task_id) {
+    try {
+      var progress = await Progress.findOne({ "user_id": user_id, "tasks_id": task_id});
+      return progress;
+      //return { res: "ok" };
+    } catch (error) {
+      return error;
+    }
+  }
+
 }
 
 module.exports = ProgressController;
