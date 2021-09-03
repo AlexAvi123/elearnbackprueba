@@ -9,6 +9,7 @@ const  TaskSchema = new Schema({
     type: {
         type: String,
         required: true,
+        lowercase: true, 
         trim: true,
     },
     unit_id:{
