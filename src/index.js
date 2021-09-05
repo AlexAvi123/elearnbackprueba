@@ -29,6 +29,6 @@ app.use(morgan());
 app.use(routers);
 app.use(express.static("src/uploads"));
 
-app.listen(5000, function () {
+app.listen(process.env.PORT || 5000, function () {
   console.log("Servidor corriendo BELLEZA");
 });
