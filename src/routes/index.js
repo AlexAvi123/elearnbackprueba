@@ -14,6 +14,10 @@ router.get("/", async (req, res) => {
   res.json({ res: "FUNCIONA MUCHACHO API READY" });
 });
 
+
+router.get("/hola", async (req, res) => {
+  res.json({ res: "FUNCIONA MUCHACHO API READY" });
+});
 /******************************** USUARIO *************************************************/
 router.post("/signup", async (req, res) => {
   var datos_user = req.body;
