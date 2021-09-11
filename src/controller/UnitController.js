@@ -24,6 +24,16 @@ class UnitController {
     }
   }
 
+  //retorna todas las unidades registradas
+  async getUnits() {
+    try {
+      var unit_result = await Unit.find();
+      return unit_result;
+    } catch (error) {
+      return 0
+    }
+  }
+
 }
 
 module.exports = UnitController;

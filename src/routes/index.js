@@ -93,6 +93,69 @@ router.get("/user/:id", (req, res) => {
   }
 });
 
+//ruta para obetener la informacion de todos los modulos mas el progreso del usuario
+router.post("/user_progress/:user_id", async (req, res) => {
+  var unit = new UnitController();
+  var progress = new ProgressController();
+  var task = new TaskController();
+
+  var array_respuesta = [];
+  var respuesta = new Object();
+  var type_questions = ["writing", "vocabulary", "reading", "grammar"]
+  var units = await unit.getUnits();
+  var user_id = req.params.user_id;
+
+  var user_exist = await progress.getIdProgress(user_id);
+  if (user_exist) {
+    for (i in units) {
+      respuesta.book_info = units[i];
+      for (j in type_questions) {
+        var type_question = type_questions[j];
+        var progress_user = await progress.getProgresses_user_filter(user_id, units[i]._id, type_question);
+        var tasks_specificType = await task.getTasks_specificType(units[i]._id, type_question);
+
+        switch (type_question) {
+          case 'writing':
+            respuesta.writing = await progress.unify_information(progress_user, tasks_specificType);
+            break;
+          case 'vocabulary':
+            respuesta.vocabulary = await progress.unify_information(progress_user, tasks_specificType);
+            break;
+          case 'reading':
+            respuesta.reading = await progress.unify_information(progress_user, tasks_specificType);
+            break;
+          case 'grammar':
+            respuesta.grammar = await progress.unify_information(progress_user, tasks_specificType);
+            break;
+          default:
+            console.log('Eso es todo amigos..');
+        }
+      }
+      array_respuesta.push(respuesta);
+      respuesta = {};
+    }
+    res.json(array_respuesta);
+  } else {
+    res.json({ error: "user no exist" });
+  }
+});
+
+
+//Ruta para obtener las preguntas de una leccion
+router.post("/task/:task_id", async (req, res) => {
+  var question = new QuestionController();
+  var questions =  await question.getQuestions(req.params.task_id);
+  if(questions){
+    if(questions.length!=0){
+      res.json(questions);
+    }else{
+      res.json({ error: "task empty" });
+    }
+  }else{
+    res.json({ error: "task no exist" });
+  }
+});
+
 
 /******************************** UNIDAD *************************************************/
 //crear una unidad
