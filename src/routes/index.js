@@ -8,16 +8,12 @@ const UnitController = require("../controller/UnitController");
 const TaskController = require("../controller/TaskController");
 const QuestionController = require('../controller/QuestionController');
 const ProgressController = require('../controller/ProgressController');
-const TaskModel = require("../models/TaskModel");
 
 router.get("/", async (req, res) => {
   res.json({ res: "FUNCIONA MUCHACHO API READY" });
 });
 
 
-router.get("/hola", async (req, res) => {
-  res.json({ res: "FUNCIONA MUCHACHO API READY" });
-});
 /******************************** USUARIO *************************************************/
 router.post("/signup", async (req, res) => {
   var datos_user = req.body;
