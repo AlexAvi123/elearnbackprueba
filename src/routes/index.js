@@ -148,6 +148,7 @@ router.post("/task/:task_id", async (req, res) => {
   if(questions){
     if(questions.length!=0){
       res.json(questions);
+      //res.json(questions.length);
     }else{
       res.json({ error: "task empty" });
     }
@@ -182,7 +183,7 @@ router.post('/unit/create', async (req, res) => {
 
 /******************************** LECCION *************************************************/
 //crear una leccion
-router.post('/task/create', async (req, res, next) => {
+router.post('/task_create', async (req, res, next) => {
   try {
     const task = new TaskController();
     const unit = new UnitController();
