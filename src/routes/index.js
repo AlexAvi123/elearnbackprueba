@@ -8,7 +8,6 @@ const UnitController = require("../controller/UnitController");
 const TaskController = require("../controller/TaskController");
 const QuestionController = require("../controller/QuestionController");
 const ProgressController = require("../controller/ProgressController");
-const TaskModel = require("../models/TaskModel");
 
 router.get("/", async (req, res) => {
   res.json({ res: "FUNCIONA MUCHACHO API READY" });
@@ -20,66 +19,30 @@ router.post("/signup", async (req, res) => {
   var user = new UserController();
 
   //try {
-  var usuario_existe =  user.findUser(req.body._id, req.body.mail);
-  if (!usuario_existe) {
-    if (req.body.password) {
-      datos_user.password = await bcrypt.hash(
-        req.body.password,
-        BCRYPT_SALT_ROUNDS
-      );
-    }
-    var respuesta =  user.saveUser(datos_user);
-    if (respuesta === "OK") {
+  try {
+    var usuario_existe = await user.findUser(req.body._id, req.body.mail);
+    if (!usuario_existe) {
+      if (req.body.password) {
+        datos_user.password = await bcrypt.hash(
+          req.body.password,
+          BCRYPT_SALT_ROUNDS
+        );
+      }
+      var respuesta = await user.saveUser(datos_user);
       /* El usuario de guardó */
       const progress = new ProgressController();
-      var user_id =  user.findUser(null, req.body.mail);
+      var user_id = await user.findUser(null, req.body.mail);
       console.log(user_id);
-      var resp =  progress.saveProgress({
-        user_id: user_id,
+      var resp = await progress.saveProgress({
+        user_id: user_id._id,
       });
       res.json({ res: user_id });
     } else {
-      res.json({ res: respuesta });
-    }
-  }{
-    res.json({res: respuesta})
-  }
-
-  /* 
-
-      if (respuesta.res != "ok") {
-        if (respuesta.code === 11000) {
-          res.status(400).json({
-            message: "Usuario Existente",
-          });
-        } else {
-          if (respuesta.name == "ValidationError") {
-            res.json(respuesta.message);
-          }
-        }
-      } else {
-        //crea un progeso vacio relacionado con el usuario
-        const progress = new ProgressController();
-        var user_id = await user.findUser(null, req.body.mail);
-        console.log(user_id);
-        var resp = await progress.saveProgress({
-          user_id: user_id,
-        });
-        if (resp.res != "ok") {
-          if (resp.name == "ValidationError") {
-            res.json(resp.message);
-          } else {
-            res.json({ res: "Error al crear progreso" });
-          }
-        }
-        res.json(respuesta);
-      }
-    } else {
-      res.json({ res: "User Exist" });
+      res.json({ res: "USER EXITS" });
     }
   } catch (error) {
-    return res.json({ res: error });
-  } */
+    res.json({ res: error });
+  }
 });
 router.post("/signin", async (req, res) => {
   userBody = req.body;
@@ -112,6 +75,88 @@ router.get("/user/:id", (req, res) => {
   }
 });
 
+//ruta para obetener la informacion de todos los modulos mas el progreso del usuario
+router.post("/user_progress/:user_id", async (req, res) => {
+  var unit = new UnitController();
+  var progress = new ProgressController();
+  var task = new TaskController();
+
+  var array_respuesta = [];
+  var respuesta = new Object();
+  var type_questions = ["writing", "vocabulary", "reading", "grammar"];
+  var units = await unit.getUnits();
+  var user_id = req.params.user_id;
+
+  var user_exist = await progress.getIdProgress(user_id);
+  if (user_exist) {
+    for (i in units) {
+      respuesta.book_info = units[i];
+      for (j in type_questions) {
+        var type_question = type_questions[j];
+        var progress_user = await progress.getProgresses_user_filter(
+          user_id,
+          units[i]._id,
+          type_question
+        );
+        var tasks_specificType = await task.getTasks_specificType(
+          units[i]._id,
+          type_question
+        );
+
+        switch (type_question) {
+          case "writing":
+            respuesta.writing = await progress.unify_information(
+              progress_user,
+              tasks_specificType
+            );
+            break;
+          case "vocabulary":
+            respuesta.vocabulary = await progress.unify_information(
+              progress_user,
+              tasks_specificType
+            );
+            break;
+          case "reading":
+            respuesta.reading = await progress.unify_information(
+              progress_user,
+              tasks_specificType
+            );
+            break;
+          case "grammar":
+            respuesta.grammar = await progress.unify_information(
+              progress_user,
+              tasks_specificType
+            );
+            break;
+          default:
+            console.log("Eso es todo amigos..");
+        }
+      }
+      array_respuesta.push(respuesta);
+      respuesta = {};
+    }
+    res.json(array_respuesta);
+  } else {
+    res.json({ error: "user no exist" });
+  }
+});
+
+//Ruta para obtener las preguntas de una leccion
+router.post("/task/:task_id", async (req, res) => {
+  var question = new QuestionController();
+  var questions = await question.getQuestions(req.params.task_id);
+  if (questions) {
+    if (questions.length != 0) {
+      res.json(questions);
+      //res.json(questions.length);
+    } else {
+      res.json({ error: "task empty" });
+    }
+  } else {
+    res.json({ error: "task no exist" });
+  }
+});
+
 /******************************** UNIDAD *************************************************/
 //crear una unidad
 router.post("/unit/create", async (req, res) => {
@@ -136,7 +181,7 @@ router.post("/unit/create", async (req, res) => {
 
 /******************************** LECCION *************************************************/
 //crear una leccion
-router.post("/task/create", async (req, res, next) => {
+router.post("/task_create", async (req, res, next) => {
   try {
     const task = new TaskController();
     const unit = new UnitController();

@@ -11,6 +11,18 @@ class QuestionController {
       return error
     }
   }
+
+  //devuelve todas las preguntas de una leccion.
+  async getQuestions(task_id) {
+    try {
+      var question_result = await Question.find({ "task_id": task_id});
+      return question_result;
+    } catch (error) {
+      return 0
+    }
+  }
 }
+
+
 
 module.exports = QuestionController;

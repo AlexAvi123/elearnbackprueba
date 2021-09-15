@@ -30,6 +30,16 @@ class TaskController {
       return 0
     }
   }
+
+  //devuelve todas las lecciones de una unidad y de un tipo en especifico
+  async getTasks_specificType(unit_id, type) {
+    try {
+      var task_result = await Task.find({ "unit_id": unit_id, "type": type});
+      return task_result;
+    } catch (error) {
+      return 0
+    }
+  }
 }
 
 module.exports = TaskController;
