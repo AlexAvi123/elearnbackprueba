@@ -54,13 +54,13 @@ router.post("/signin", async (req, res) => {
     result = await bcrypt.compare(userBody.password, user.password);
     if (result) {
       /* contraseñas iguales */
-      res.json(user);
+      res.json({res: user});
     } else {
       /* Credenciales incorrectas */
-      res.json(null);
+      res.json({res: "PASSWORD INCORRECT"});
     }
   } else {
-    res.json({ res: "No existe Usuario" });
+    res.json({ res: "USER NOT EXIST" });
   }
 });
 
