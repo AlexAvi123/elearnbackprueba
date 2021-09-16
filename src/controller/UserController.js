@@ -7,10 +7,10 @@ class UserController {
   async saveUser(_user) {
     try {
       var user = new User(_user);
-      await user.save();
-      return { res: "ok" }
+      user_save = await user.save();
+      return "OK"
     } catch (error) {
-      return {"error": error}
+      return error
     }
   }
 
@@ -23,11 +23,11 @@ class UserController {
       }else{
         user = await User.findOne({ mail: _mail });
       }
+      return user
     } catch (error) {
       //return 0
       return {"error": error}
     }
-    return user
   }
 
 
