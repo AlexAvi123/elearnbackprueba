@@ -91,7 +91,7 @@ class ProgressController {
         task_id = tasks[0]._id;
       }
       var respuesta = {
-        "total_task:": tasks_specificType.length,
+        "total_task": tasks_specificType.length,
         "user_progress": progress_user.length,
         "task_id": task_id
       }
