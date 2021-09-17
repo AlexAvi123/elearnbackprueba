@@ -3,6 +3,9 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 const BCRYPT_SALT_ROUNDS = 12;
+const jwt = require("jsonwebtoken");
+const config = require("../config/auth.config.js");
+
 const UserController = require("../controller/UserController");
 const UnitController = require("../controller/UnitController");
 const TaskController = require("../controller/TaskController");
@@ -13,6 +16,21 @@ router.get("/", async (req, res) => {
   res.json({ res: "FUNCIONA MUCHACHO API READY" });
 });
 
+router.get("/auth/confirm/:confirmationCode", async (req, res, next) => {
+  var user = new UserController();
+
+  user_token = await user.findUser(null, null, req.params.confirmationCode);
+  if (!user_token) {
+    res.json({ res: "USER NOT EXIST" });
+  } else {
+    respuesta = await user.changeUser(user_token._id, { status: "Active" });
+    if (respuesta !== "OK") {
+      res.json({ res: respuesta });
+    } else {
+      res.redirect('http://localhost:3000/dashboard');
+    }
+  }
+});
 /******************************** USUARIO *************************************************/
 router.post("/signup", async (req, res) => {
   var datos_user = req.body;
@@ -20,7 +38,8 @@ router.post("/signup", async (req, res) => {
 
   //try {
   try {
-    var usuario_existe = await user.findUser(req.body._id, req.body.mail);
+    const token = jwt.sign({ email: req.body.email }, config.secret);
+    var usuario_existe = await user.findUser(req.body._id, req.body.mail, null);
     if (!usuario_existe) {
       if (req.body.password) {
         datos_user.password = await bcrypt.hash(
@@ -28,10 +47,11 @@ router.post("/signup", async (req, res) => {
           BCRYPT_SALT_ROUNDS
         );
       }
+      datos_user.confirmationCode = token;
       var respuesta = await user.saveUser(datos_user);
       /* El usuario de guardó */
       const progress = new ProgressController();
-      var user_id = await user.findUser(null, req.body.mail);
+      var user_id = await user.findUser(null, req.body.mail, null);
       console.log(user_id);
       var resp = await progress.saveProgress({
         user_id: user_id._id,
@@ -47,28 +67,30 @@ router.post("/signup", async (req, res) => {
 router.post("/signin", async (req, res) => {
   userBody = req.body;
   user = new UserController();
-  user = await user.findUser(null, userBody.mail);
+  user = await user.findUser(null, userBody.mail, null);
   console.log(user);
   if (user) {
     /* si existe */
     result = await bcrypt.compare(userBody.password, user.password);
     if (result) {
       /* contraseñas iguales */
-      res.json({res: user});
+
+      res.json({ res: user });
     } else {
       /* Credenciales incorrectas */
-      res.json({res: "PASSWORD INCORRECT"});
+      res.json({ res: "PASSWORD INCORRECT" });
     }
   } else {
     res.json({ res: "USER NOT EXIST" });
   }
 });
 
-router.get("/user/:id", (req, res) => {
-  user = new UserController().findUser(null, req.params.id);
-  if (user) {
+router.get("/user/:id", async (req, res) => {
+  user = new UserController()
+  user_find = await findUser(req.params.id, null , null);
+  if (user_find) {
     /* el usuario existe */
-    res.json(user);
+    res.json(user_find);
   } else {
     /* Usuario no existe */
     res.json({ res: "User Not Exist" });
@@ -265,7 +287,8 @@ router.post("/progress/update", async (req, res, next) => {
     const progress = new ProgressController();
     var user_datos = await user.findUser(
       req.body.user_id.id,
-      req.body.user_id.mail
+      req.body.user_id.mail,
+      null
     );
     if (user_datos != null && !user_datos.error) {
       var task_datos = await task.findTask(req.body.tasks_id);
