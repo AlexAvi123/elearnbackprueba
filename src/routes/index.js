@@ -87,7 +87,7 @@ router.post("/signin", async (req, res) => {
 
 router.get("/user/:id", async (req, res) => {
   user = new UserController()
-  user_find = await findUser(req.params.id, null , null);
+  user_find = await user.findUser(req.params.id, null , null);
   if (user_find) {
     /* el usuario existe */
     res.json(user_find);
