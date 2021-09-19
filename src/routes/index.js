@@ -290,7 +290,7 @@ router.post("/progress/update", async (req, res, next) => {
       req.body.user_id.mail,
       null
     );
-    if (user_datos != null && !user_datos.error) {
+    if (!user_datos.error) {
       var task_datos = await task.findTask(req.body.tasks_id);
       if (task_datos) {
         var user_progress = await progress.getIdProgress(user_datos._id);
