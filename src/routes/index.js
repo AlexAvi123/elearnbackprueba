@@ -15,7 +15,7 @@ const QuestionController = require("../controller/QuestionController");
 const ProgressController = require("../controller/ProgressController");
 
 router.get("/", async (req, res) => {
-  res.json({ res: "FUNCIONA MUCHACHO API READY " + process.env.USER_MAIL });
+  res.json({ res: process.env.USER_MAIL });
 });
 
 router.get("/auth/confirm/:confirmationCode", async (req, res, next) => {
