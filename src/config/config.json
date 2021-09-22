@@ -1,0 +1,7 @@
+{
+    "password":"29742b40778b211ff4b1d052ec9e26eae6dfb8b3",
+    "login":false,
+    "scopes":["https://www.googleapis.com/auth/drive"],
+    "mimeTypes":["application/vnd.google-apps.folder","application/vnd.google-apps.document", "application/vnd.google-apps.video", "application/vnd.google-apps.photo", "application/vnd.google-apps.audio", "application/vnd.google-apps.unknown"],
+    "port":3000
+  }

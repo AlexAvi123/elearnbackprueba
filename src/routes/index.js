@@ -4,15 +4,59 @@ const router = express.Router();
 const bcrypt = require("bcrypt");
 const BCRYPT_SALT_ROUNDS = 12;
 const jwt = require("jsonwebtoken");
-const config = require("../config/auth.config.js");
+
 
 require('dotenv').config()
+
 
 const UserController = require("../controller/UserController");
 const UnitController = require("../controller/UnitController");
 const TaskController = require("../controller/TaskController");
 const QuestionController = require("../controller/QuestionController");
 const ProgressController = require("../controller/ProgressController");
+
+/* Instancias de google  */
+var {google} = require('googleapis');
+const key = require("../config/key.json");
+const config = require("../config/config.json");
+
+let admin = new google.auth.JWT(
+  key.client_email,
+  null,
+  key.private_key,
+  config.scopes
+  );
+  
+var drive = google.drive('v3');
+
+
+admin.authorize(function (err, tokens) {
+  if (err)
+  {
+   console.log(err);
+   return;
+  }
+});
+
+router.get('/enlistarDrive', (req, res)=>{
+  drive.files.list({
+    auth: admin,
+    types:config.mimeTypes,
+    /* q: "'17jyll4FNYxNXeIItcsM5sKl_lQP5zk_T' in parents and " + mimeTypesQuery() }, */
+    q: "'1nK-o9qSdZCbT-oEFWYh3_Buo1opRMKrn' in parents and " + mimeTypesQuery() },
+    function (err, files)
+    {
+      // Si ocurre un error de Google
+      if (err)
+      {
+        res.status(500).send(err.message);
+        return;
+      }
+
+      // Éxito
+      res.send(files.data.files);
+    });
+})
 
 router.get("/", async (req, res) => {
   res.json({ res: process.env.USER_MAIL });
@@ -340,5 +384,19 @@ router.post("/progress/update", async (req, res, next) => {
     next();
   }
 });
+
+function mimeTypesQuery()
+{
+  var q = "(";
+  for(var i = 0; i<config.mimeTypes.length; i++)
+  {
+      q += "mimeType='" + config.mimeTypes[i] + "'";
+      if( i != config.mimeTypes.length - 1)
+      q += " or ";
+  }
+  q += ")";
+
+  return q;
+}
 
 module.exports = router;
