@@ -27,8 +27,18 @@ router.get("/auth/confirm/:confirmationCode", async (req, res, next) => {
     if (respuesta !== "OK") {
       res.json({ res: respuesta });
     } else {
-      res.redirect('http://localhost:3000/dashboard');
+      res.redirect("http://localhost:3000/dashboard");
     }
+  }
+});
+
+router.get("/restartPassword/:mail", (req, res, next) => {
+  var user = new UserController();
+
+  user_find = user.findUser(null, req.params.mail, null);
+  if (!user_find) {
+    res.json({ res: "USER NOT EXIST" });
+  } else {
   }
 });
 /******************************** USUARIO *************************************************/
@@ -61,33 +71,37 @@ router.post("/signup", async (req, res) => {
       res.json({ res: "USER EXITS" });
     }
   } catch (error) {
-    res.json({ res: error });
+    res.json({ res: "ERROR", err: error });
   }
 });
 router.post("/signin", async (req, res) => {
   userBody = req.body;
   user = new UserController();
-  user = await user.findUser(null, userBody.mail, null);
-  console.log(user);
-  if (user) {
-    /* si existe */
-    result = await bcrypt.compare(userBody.password, user.password);
-    if (result) {
-      /* contraseñas iguales */
+  try {
+    user = await user.findUser(null, userBody.mail, null);
+    console.log(user);
+    if (user) {
+      /* si existe */
+      result = await bcrypt.compare(userBody.password, user.password);
+      if (result) {
+        /* contraseñas iguales */
 
-      res.json({ res: user });
+        res.json({ res: user });
+      } else {
+        /* Credenciales incorrectas */
+        res.json({ res: "PASSWORD INCORRECT" });
+      }
     } else {
-      /* Credenciales incorrectas */
-      res.json({ res: "PASSWORD INCORRECT" });
+      res.json({ res: "USER NOT EXIST" });
     }
-  } else {
-    res.json({ res: "USER NOT EXIST" });
+  } catch (error) {
+    res.json({res: "ERROR", err: error})
   }
 });
 
 router.get("/user/:id", async (req, res) => {
-  user = new UserController()
-  user_find = await user.findUser(req.params.id, null , null);
+  user = new UserController();
+  user_find = await user.findUser(req.params.id, null, null);
   if (user_find) {
     /* el usuario existe */
     res.json(user_find);
