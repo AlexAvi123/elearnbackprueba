@@ -300,12 +300,12 @@ router.post("/progress/update", async (req, res, next) => {
     const task = new TaskController();
     const progress = new ProgressController();
     var user_datos = await user.findUser(
-      req.body.user_id.id,
-      req.body.user_id.mail,
+      req.body.user_id,
+      null,
       null
     );
-    if (user_datos != null && !user_datos.error) {
-      var task_datos = await task.findTask(req.body.tasks_id);
+    if (!user_datos.error) {
+      var task_datos = await task.findTask(req.body.task_id);
       if (task_datos) {
         var user_progress = await progress.getIdProgress(user_datos._id);
         if (user_progress) {
