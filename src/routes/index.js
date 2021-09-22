@@ -25,7 +25,7 @@ router.get("/auth/confirm/:confirmationCode", async (req, res, next) => {
   if (!user_token) {
     res.json({ res: "USER NOT EXIST" });
   } else {
-    respuesta = await user.changeUser(user_token._id, { status: "Active" });
+    respuesta = await user.changeUser(user_token._id, { "status": "Active" });
     if (respuesta !== "OK") {
       res.json({ res: respuesta });
     } else {
@@ -50,7 +50,7 @@ router.post("/signup", async (req, res) => {
 
   //try {
   try {
-    const token = jwt.sign({ email: req.body.email }, config.secret);
+    const token = jwt.sign({ email: req.body.email }, process.env.SECRET );
     var usuario_existe = await user.findUser(req.body._id, req.body.mail, null);
     if (!usuario_existe) {
       if (req.body.password) {
