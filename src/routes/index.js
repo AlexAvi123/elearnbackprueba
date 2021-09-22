@@ -6,6 +6,8 @@ const BCRYPT_SALT_ROUNDS = 12;
 const jwt = require("jsonwebtoken");
 const config = require("../config/auth.config.js");
 
+require('dotenv').config()
+
 const UserController = require("../controller/UserController");
 const UnitController = require("../controller/UnitController");
 const TaskController = require("../controller/TaskController");
@@ -13,7 +15,7 @@ const QuestionController = require("../controller/QuestionController");
 const ProgressController = require("../controller/ProgressController");
 
 router.get("/", async (req, res) => {
-  res.json({ res: "FUNCIONA MUCHACHO API READY" });
+  res.json({ res: "FUNCIONA MUCHACHO API READY " + process.env.USER_MAIL });
 });
 
 router.get("/auth/confirm/:confirmationCode", async (req, res, next) => {
