@@ -40,6 +40,16 @@ class TaskController {
       return 0
     }
   }
+
+  //devuelve todas las lecciones
+  async getTasks() {
+    try {
+      var task_result = await Task.find();
+      return task_result;
+    } catch (error) {
+      return 0
+    }
+  }
 }
 
 module.exports = TaskController;

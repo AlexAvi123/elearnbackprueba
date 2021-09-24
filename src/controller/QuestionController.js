@@ -21,6 +21,16 @@ class QuestionController {
       return 0
     }
   }
+
+  //devuelve todas las preguntas registradas en la base de datos
+  async getAllQuestions() {
+    try {
+      var question_result = await Question.find();
+      return question_result;
+    } catch (error) {
+      return 0
+    }
+  }
 }
 
 

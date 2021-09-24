@@ -195,6 +195,55 @@ router.post("/task/:task_id", async (req, res) => {
   }
 });
 
+
+//Ruta para obtener las preguntas de una libro
+router.get("/book/:n_book", async (req, res) => {
+  var unit = new UnitController();
+  var task = new TaskController();
+  var question = new QuestionController();
+
+  var units = await unit.getUnits();
+  var tasks = await task.getTasks();
+
+  var respuesta = [];
+
+  var units_filter = units.filter(function (obj) {
+    if (obj.book == req.params.n_book) {
+      return true;
+    } else {
+      return false;
+    }
+  });
+
+  var tasks_filter = tasks.filter(function (obj) {
+    var bandera = false;
+    for (unit in units_filter) {
+      if (JSON.stringify(obj.unit_id) === JSON.stringify(units_filter[unit]._id)) {
+        bandera = true;
+      }
+    }
+    return bandera;
+  });
+
+  for (i in tasks_filter) {
+    var questions = await question.getQuestions(tasks_filter[i]._id);
+    respuesta = respuesta.concat(questions);
+  }
+
+  res.json(respuesta);
+});
+
+
+//Ruta para obtener las preguntas de todos los libros
+router.get("/evaluation", async (req, res) => {
+  var question = new QuestionController();
+  var questions = await question.getAllQuestions();
+  res.json(questions);
+});
+
+
+
+
 /******************************** UNIDAD *************************************************/
 //crear una unidad
 router.post("/unit/create", async (req, res) => {
