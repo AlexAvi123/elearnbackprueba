@@ -29,7 +29,7 @@ router.get("/auth/confirm/:confirmationCode", async (req, res, next) => {
     if (respuesta !== "OK") {
       res.json({ res: respuesta });
     } else {
-      res.redirect("https://utminglesapp.herokuapp.com/dashboard");
+      res.redirect("https://serene-thicket-69875.herokuapp.com/dashboard");
     }
   }
 });

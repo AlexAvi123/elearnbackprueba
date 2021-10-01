@@ -8,6 +8,7 @@ module.exports.confirmToken = async (req, res, next)=>{
     }
     try {
         const key = jwt.verify(strToken, process.env.SECRET)
+        //return res.json(key);
         const user = await User.findOne({ mail: key.mail });
         if(!user){
             return res.json({ msj: "User no encontrado" });
