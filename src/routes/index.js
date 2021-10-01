@@ -2,9 +2,9 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
-const BCRYPT_SALT_ROUNDS = 12;
 const jwt = require("jsonwebtoken");
 const config = require("../config/auth.config.js");
+const token = require("../config/token.config");
 
 require('dotenv').config()
 
@@ -29,7 +29,7 @@ router.get("/auth/confirm/:confirmationCode", async (req, res, next) => {
     if (respuesta !== "OK") {
       res.json({ res: respuesta });
     } else {
-      res.redirect("http://localhost:3000/dashboard");
+      res.redirect("https://utminglesapp.herokuapp.com/dashboard");
     }
   }
 });
@@ -47,16 +47,15 @@ router.get("/restartPassword/:mail", (req, res, next) => {
 router.post("/signup", async (req, res) => {
   var datos_user = req.body;
   var user = new UserController();
-
-  //try {
+ 
   try {
-    const token = jwt.sign({ email: req.body.email }, process.env.SECRET );
+    const token = jwt.sign({ mail: req.body.mail }, process.env.SECRET );
     var usuario_existe = await user.findUser(req.body._id, req.body.mail, null);
     if (!usuario_existe) {
       if (req.body.password) {
         datos_user.password = await bcrypt.hash(
           req.body.password,
-          BCRYPT_SALT_ROUNDS
+          parseInt(process.env.BCRYPT_SALT_ROUNDS)
         );
       }
       datos_user.confirmationCode = token;
@@ -179,6 +178,7 @@ router.post("/user_progress/:user_id", async (req, res) => {
   }
 });
 
+//token.confirmToken, 
 //Ruta para obtener las preguntas de una leccion
 router.post("/task/:task_id", async (req, res) => {
   var question = new QuestionController();

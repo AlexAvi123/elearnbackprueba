@@ -2,8 +2,6 @@ const User = require("../models/UserModel");
 const bcrypt = require("bcrypt");
 const nodemailer = require("../config/nodemailer.config");
 
-const BCRYPT_SALT_ROUNDS = 12;
-
 class UserController {
   async saveUser(_user) {
     try {
