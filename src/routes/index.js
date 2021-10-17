@@ -242,6 +242,26 @@ router.get("/evaluation", async (req, res) => {
 });
 
 
+//Ruta para obtener las preguntas de una unidad y type especifico
+router.post("/review", async (req, res) => {
+  const body = req.body;
+  var unit = new UnitController();
+  var task = new TaskController();
+  var question = new QuestionController();
+
+  var unit_id = await unit.getIdUnit(body.unit, body.module, body.book);
+  var tasks = await task.getTasks_specificType(unit_id, body.type);
+
+  var respuesta = [];
+  for (i in tasks) {
+    var questions = await question.getQuestions(tasks[i]._id);
+    respuesta = respuesta.concat(questions);
+  }
+  
+  res.json(respuesta);
+});
+
+
 
 
 /******************************** UNIDAD *************************************************/
