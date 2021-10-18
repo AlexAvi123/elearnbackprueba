@@ -243,8 +243,8 @@ router.get("/evaluation", async (req, res) => {
 
 
 //Ruta para obtener las preguntas de una unidad y type especifico
-router.post("/review", async (req, res) => {
-  const body = req.body;
+router.get("/review/:book/:module/:unit/:type", async (req, res) => {
+  const body = req.params;
   var unit = new UnitController();
   var task = new TaskController();
   var question = new QuestionController();
